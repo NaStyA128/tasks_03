@@ -10,11 +10,10 @@ COMMANDS = ['draw_line', 'draw_rectangle', 'draw_triangle',
 
 class Figure:
 
-    # functions = []
+    cmds = []
 
     def __init__(self, a, type):
-        # self.functions.append('self.__line__([(0, 0), (100, 50)], a)')
-        # self.functions[0]
+        self.cmds[type]
         print('Input pencolor: ')
         pc = input()
         a.pencolor(pc)
@@ -22,14 +21,14 @@ class Figure:
         fc = input()
         a.fillcolor(fc)
         if type == COMMANDS[0]:
-            points = self.__input_point__(2)
-            self.__line__(points, a)
+            points = self.input_point(2)
+            self.line(points, a)
         elif type == COMMANDS[1]:
-            points = self.__input_point__(2)
-            self.__rectangle__(points, a)
+            points = self.input_point(2)
+            self.rectangle(points, a)
         elif type == COMMANDS[2]:
-            points = self.__input_point__(3)
-            self.__triangle__(points, a)
+            points = self.input_point(3)
+            self.triangle(points, a)
         elif type == COMMANDS[3]:
             point = []
             print('Input central point: ')
@@ -37,18 +36,18 @@ class Figure:
             point.append(int(input('y = ')))
             print('Input radius: ')
             r = int(input())
-            self.__circle__(point, r, a)
+            self.circle(point, r, a)
         elif type == COMMANDS[4]:
-            points = self.__input_point__(2)
+            points = self.input_point(2)
             print('Input zip: ')
             zip = float(input())
-            self.__my_cos__(points, zip, a)
+            self.my_cos(points, zip, a)
         elif type == COMMANDS[5]:
             quit()
         else:
             print('Error')
 
-    def __input_point__(self, count):
+    def input_point(self, count):
         points = []
         point = []
         i = 0
@@ -61,7 +60,7 @@ class Figure:
             i += 1
         return points
 
-    def __line__(self, points, a):
+    def line(self, points, a):
         a.setheading(0)
         a.penup()
         a.goto(points[0])
@@ -69,7 +68,7 @@ class Figure:
         a.setpos(points[1])
         a.penup()
 
-    def __circle__(self, start_point, radius, a):
+    def circle(self, start_point, radius, a):
         a.setheading(90)
         a.penup()
         a.goto(start_point[0] + radius, start_point[1])
@@ -79,7 +78,7 @@ class Figure:
         a.end_fill()
         a.penup()
 
-    def __rectangle__(self, points, a):
+    def rectangle(self, points, a):
         a.setheading(0)
         a.penup()
         a.goto(points[0])
@@ -92,7 +91,7 @@ class Figure:
         a.end_fill()
         a.penup()
 
-    def __triangle__(self, points, a):
+    def triangle(self, points, a):
         a.setheading(0)
         a.penup()
         a.goto(points[0])
@@ -104,7 +103,7 @@ class Figure:
         a.end_fill()
         a.penup()
 
-    def __my_cos__(self, points, deth_cos, a):
+    def my_cos(self, points, deth_cos, a):
         a.penup()
         a.setpos(points[0])
         a.pendown()
