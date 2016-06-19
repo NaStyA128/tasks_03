@@ -6,6 +6,7 @@ import json
 from math import cos
 
 cmds = {}
+ar = {}
 
 
 def commands(func):
@@ -14,23 +15,41 @@ def commands(func):
     return func
 
 
+"""
+def decor(method):
+    def wrapper(self, *args):
+        # ar[method.__name__] = method(self, *args)
+        print(args)
+        print('hi')
+        return method(self, *args)
+    return wrapper
+
+"""
+
+
 class Figure(object):
 
     commands_list = cmds
     a = 0
     file = []
 
-
     def __init__(self):
+        print('\nHi! It is a grafics editor. '
+              'You can enter the following commands: \n')
         for i in self.commands_list:
-            print(i)
+            print('- ' + i)
         while True:
-            command = input('Input command: ')
-            # self.file[self.commands_list[command]] = self.commands_list[command](self)
-            h ={}
-            h = {self.commands_list[command].__name__: self.commands_list[command](self)}
+            command = input('\nEnter command: ')
+            h = {self.commands_list[command].__name__: self.commands_list[command]()}
             self.file.append(h)
-            # print(self.file)
+
+        # self.my_func(10, 10)
+
+    """
+    def my_func(self, *args):
+        print('args')
+
+    """
 
     @commands
     def new_file(self):
@@ -40,27 +59,35 @@ class Figure(object):
 
     @commands
     def save_file(self):
-        file_name = input('Input files name: ')
+        file_name = input('Enter files name: ')
         f = open(file_name, 'a+')
         f.write(json.dumps(self.file))
         f.close()
         return 1
 
     @commands
+    def open_file(self):
+        file_name = input('Enter files name: ')
+        f = open(file_name)
+        text = f.read()
+        self.file = json.loads(text)
+        print(self.file)
+
+    @commands
     def set_pen_color(self):
-        color = input('Input color: ')
+        color = input('Enter color: ')
         self.a.pencolor(color)
         return color
 
     @commands
     def set_pen_size(self):
-        size = input('Input size: ')
+        size = input('Enter size: ')
         self.a.pensize(size)
         return size
 
     @commands
     def set_fill_color(self):
-        color = input('Input color: ')
+        color = input('Enter color: ')
         self.a.fillcolor(color)
         return color
 
@@ -69,7 +96,7 @@ class Figure(object):
         point = []
         i = 0
         while i < count:
-            print('Input point: ')
+            print('Enter point: ')
             point.append(int(input('x = ')))
             point.append(int(input('y = ')))
             points.append(point)
@@ -123,10 +150,10 @@ class Figure(object):
     def circle(self):
         self.a.setheading(90)
         start_point = []
-        print('Input central point: ')
+        print('Enter central point: ')
         start_point.append(int(input('x = ')))
         start_point.append(int(input('y = ')))
-        radius = int(input('Input radius: '))
+        radius = int(input('Enter radius: '))
         self.a.penup()
         self.a.goto(start_point[0] + radius, start_point[1])
         self.a.pendown()
@@ -151,11 +178,6 @@ class Figure(object):
             i += 5.0
         self.a.penup()
         return [points, deth_cos]
-
-    # @commands
-    # def my_func(self):
-    #    print(2 * 2)
-    # my_func = decor(my_func)
 
 
 def main():
