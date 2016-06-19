@@ -4,9 +4,9 @@
 import turtle
 import json
 from math import cos
+# from sys import exit
 
 cmds = {}
-ar = {}
 
 
 def commands(func):
@@ -32,6 +32,7 @@ class Figure(object):
     commands_list = cmds
     a = 0
     file = []
+    file_name = ''
 
     def __init__(self):
         print('\nHi! It is a grafics editor. '
@@ -40,8 +41,11 @@ class Figure(object):
             print('- ' + i)
         while True:
             command = input('\nEnter command: ')
-            h = {self.commands_list[command].__name__: self.commands_list[command]()}
-            self.file.append(h)
+            # ключ в словаре (значение под этим ключом)
+            h = {self.commands_list[command].__name__:
+                 self.commands_list[command](self)}
+            if self.commands_list[command].__name__ != 'open_file':
+                self.file.append(h)
 
         # self.my_func(10, 10)
 
@@ -52,42 +56,47 @@ class Figure(object):
     """
 
     @commands
-    def new_file(self):
+    def new_file(self, *args):
         self.a = turtle.Turtle()
         self.a.speed(10)
         return 1
 
     @commands
     def save_file(self):
-        file_name = input('Enter files name: ')
-        f = open(file_name, 'a+')
+        file_name = self.file_name and self.file_name or \
+                    input('Enter files name: ')
+        f = open(file_name, 'w')
         f.write(json.dumps(self.file))
         f.close()
         return 1
 
     @commands
-    def open_file(self):
-        file_name = input('Enter files name: ')
-        f = open(file_name)
+    def open_file(self, *args):
+        self.file_name = args and args[0] or input('Enter files name: ')
+        f = open(self.file_name, 'r')
         text = f.read()
+        f.close()
         self.file = json.loads(text)
-        print(self.file)
+        for line in self.file:
+            for key in line:
+                self.commands_list[key](self, line[key])
+        return self.file_name
 
     @commands
-    def set_pen_color(self):
-        color = input('Enter color: ')
+    def set_pen_color(self, *args):
+        color = args and args[0] or input('Enter color: ')
         self.a.pencolor(color)
         return color
 
     @commands
-    def set_pen_size(self):
-        size = input('Enter size: ')
+    def set_pen_size(self, *args):
+        size = args and args[0] or input('Enter size: ')
         self.a.pensize(size)
         return size
 
     @commands
-    def set_fill_color(self):
-        color = input('Enter color: ')
+    def set_fill_color(self, *args):
+        color = args and args[0] or input('Enter color: ')
         self.a.fillcolor(color)
         return color
 
@@ -105,8 +114,8 @@ class Figure(object):
         return points
 
     @commands
-    def line(self):
-        points = self.input_point(2)
+    def line(self, *args):
+        points = args and args[0] or self.input_point(2)
         self.a.setheading(0)
         self.a.penup()
         self.a.goto(points[0])
@@ -116,8 +125,8 @@ class Figure(object):
         return points
 
     @commands
-    def rectangle(self):
-        points = self.input_point(2)
+    def rectangle(self, *args):
+        points = args and args[0] or self.input_point(2)
         self.a.setheading(0)
         self.a.penup()
         self.a.goto(points[0])
@@ -132,8 +141,8 @@ class Figure(object):
         return points
 
     @commands
-    def triangle(self):
-        points = self.input_point(3)
+    def triangle(self, *args):
+        points = args and args[0] or self.input_point(3)
         self.a.setheading(0)
         self.a.penup()
         self.a.goto(points[0])
@@ -147,13 +156,17 @@ class Figure(object):
         return points
 
     @commands
-    def circle(self):
-        self.a.setheading(90)
+    def circle(self, *args):
         start_point = []
-        print('Enter central point: ')
-        start_point.append(int(input('x = ')))
-        start_point.append(int(input('y = ')))
-        radius = int(input('Enter radius: '))
+        self.a.setheading(90)
+        if args:
+            start_point = args[0][0]
+            radius = args[0][1]
+        else:
+            print('Enter central point: ')
+            start_point.append(int(input('x = ')))
+            start_point.append(int(input('y = ')))
+            radius = int(input('Enter radius: '))
         self.a.penup()
         self.a.goto(start_point[0] + radius, start_point[1])
         self.a.pendown()
@@ -164,10 +177,14 @@ class Figure(object):
         return [start_point, radius]
 
     @commands
-    def my_cos(self):
-        points = self.input_point(2)
-        print('Input zip: ')
-        deth_cos = float(input())
+    def my_cos(self, *args):
+        if args:
+            points = args[0][0]
+            deth_cos = args[0][1]
+        else:
+            points = self.input_point(2)
+            print('Input zip: ')
+            deth_cos = float(input())
         self.a.penup()
         self.a.setpos(points[0])
         self.a.pendown()
@@ -178,6 +195,10 @@ class Figure(object):
             i += 5.0
         self.a.penup()
         return [points, deth_cos]
+
+    @commands
+    def exit(self):
+        exit()
 
 
 def main():
