@@ -4,7 +4,6 @@
 import turtle
 import json
 from math import cos
-# from sys import exit
 
 cmds = {}
 
@@ -33,21 +32,30 @@ class Figure(object):
     a = 0
     file = []
     file_name = ''
+    win = 0
 
     def __init__(self):
-        print('\nHi! It is a grafics editor. '
+        print('\033[99m' + '\nHi! It is a grafics editor. '
               'You can enter the following commands: \n')
         for i in self.commands_list:
             print('- ' + i)
         while True:
             command = input('\nEnter command: ')
-            # ключ в словаре (значение под этим ключом)
+            h = self.enter_command(command)
+            if self.commands_list[command].__name__ != 'open_file' \
+                    and self.commands_list[command].__name__ != 'cancel' \
+                    and self.commands_list[command].__name__ != 'edit_figure':
+                self.file.append(h)
+        # self.my_func(10, 10)
+
+    def enter_command(self, command):
+        try:
             h = {self.commands_list[command].__name__:
                  self.commands_list[command](self)}
-            if self.commands_list[command].__name__ != 'open_file':
-                self.file.append(h)
-
-        # self.my_func(10, 10)
+            return h
+        except KeyError:
+            print('\033[91m' + '\nIncorrect command!')
+            self.__init__()
 
     """
     def my_func(self, *args):
@@ -58,7 +66,8 @@ class Figure(object):
     @commands
     def new_file(self, *args):
         self.a = turtle.Turtle()
-        self.a.speed(10)
+        self.win = turtle.Screen()
+        self.a.speed(0)
         return 1
 
     @commands
@@ -81,6 +90,37 @@ class Figure(object):
             for key in line:
                 self.commands_list[key](self, line[key])
         return self.file_name
+
+    @commands
+    def close_file(self):
+        self.save_file()
+        turtle.bye()
+
+    @commands
+    def cancel(self):
+        self.a.undo()
+        self.file.pop()
+
+    @commands
+    def edit_figure(self):
+        print('Change figure:')
+        i = 0
+        for f in self.file:
+            print(repr(i) + ' - ' + repr(f))
+            i += 1
+        figure_number = int(input('Enter number figure: '))
+        self.file.pop(figure_number)
+        command = input('Enter new command: ')
+        h = self.enter_command(command)
+        if self.commands_list[command].__name__ != 'open_file' \
+                and self.commands_list[command].__name__ != 'cancel' \
+                and self.commands_list[command].__name__ != 'edit_figure':
+            self.file.insert(figure_number, h)
+        f_name = self.file_name
+        self.a.reset()
+        # print(f_name)
+        self.save_file()
+        self.open_file(f_name)
 
     @commands
     def set_pen_color(self, *args):
@@ -198,6 +238,7 @@ class Figure(object):
 
     @commands
     def exit(self):
+        self.close_file()
         exit()
 
 

@@ -1,0 +1,1 @@
+[{"new_file": 1}, {"set_pen_color": "red"}, {"set_fill_color": "green"}, {"circle": [[0, 0], 200]}, {"set_pen_color": "green"}, {"set_fill_color": "red"}, {"circle": [[0, 0], 100]}, {"set_pen_color": "blue"}, {"set_fill_color": "blue"}, {"rectangle": [[-20, 20], [20, -20]]}]
